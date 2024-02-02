@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1706865875530,
+      "tag": "0000_cultured_ink",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1706868098275,
+      "tag": "0001_powerful_deathbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1706869142781,
+      "tag": "0002_violet_silhouette",
+      "breakpoints": true
+    }
+  ]
+}
