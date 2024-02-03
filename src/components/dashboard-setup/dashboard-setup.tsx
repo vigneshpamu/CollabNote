@@ -1,6 +1,6 @@
 'use client'
 import { AuthUser } from '@supabase/supabase-js'
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -8,15 +8,37 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card'
+import EmojiPicker from '../global/emoji-picker'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
+import { useForm } from 'react-hook-form'
+import { CreateWorkspaceFormSchema } from '@/lib/types'
+import { z } from 'zod'
+import { Button } from '../ui/button'
+import Loader from '../global/Loader'
+import { Subscription } from '@/lib/supabase/supabase.types'
 interface DashboardSetupProps {
   user: AuthUser
-  subscription: {} | null
+  subscription: Subscription | null
 }
 
 const DashboardSetup: React.FC<DashboardSetupProps> = ({
   subscription,
   user,
 }) => {
+  const [selectedEmoji, setSelectedEmoji] = useState('👜')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting: isLoading, errors },
+  } = useForm<z.infer<typeof CreateWorkspaceFormSchema>>({
+    mode: 'onChange',
+    defaultValues: {
+      logo: '',
+      workspaceName: '',
+    },
+  })
   return (
     <Card
       className="w-[800px]
@@ -38,7 +60,73 @@ const DashboardSetup: React.FC<DashboardSetupProps> = ({
               className="flex
             items-center
             gap-4"
-            ></div>
+            >
+              <div className="text-5xl">
+                <EmojiPicker getValue={(emoji) => setSelectedEmoji(emoji)}>
+                  {selectedEmoji}
+                </EmojiPicker>
+              </div>
+              <div className="w-full ">
+                <Label
+                  htmlFor="workspaceName"
+                  className="text-sm
+                  text-muted-foreground
+                "
+                >
+                  Name
+                </Label>
+                <Input
+                  id="workspaceName"
+                  type="text"
+                  placeholder="Workspace Name"
+                  disabled={isLoading}
+                  {...register('workspaceName', {
+                    required: 'Workspace name is required',
+                  })}
+                />
+                <small className="text-red-600">
+                  {errors?.workspaceName?.message?.toString()}
+                </small>
+              </div>
+            </div>
+            <div>
+              <Label
+                htmlFor="logo"
+                className="text-sm
+                  text-muted-foreground
+                "
+              >
+                Workspace Logo
+              </Label>
+              <Input
+                id="logo"
+                type="file"
+                accept="image/*"
+                placeholder="Workspace Name"
+                // disabled={isLoading || subscription?.status !== 'active'}
+                {...register('logo', {
+                  required: false,
+                })}
+              />
+              <small className="text-red-600">
+                {errors?.logo?.message?.toString()}
+              </small>
+              {subscription?.status !== 'active' && (
+                <small
+                  className="
+                  text-muted-foreground
+                  block
+              "
+                >
+                  To customize your workspace, you need to be on a Pro Plan
+                </small>
+              )}
+            </div>
+            <div className="self-end">
+              <Button disabled={isLoading} type="submit">
+                {!isLoading ? 'Create Workspace' : <Loader />}
+              </Button>
+            </div>
           </div>
         </form>
       </CardContent>
